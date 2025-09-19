@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Parakh - Student Performance Monitoring</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Reset & base ---------- */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:'Poppins',sans-serif;background:#f5f7fa;color:#1f2937;line-height:1.5}
+
+    /* ---------- Header ---------- */
+    header{position:sticky;top:0;background:linear-gradient(135deg,#0f172a 0%,#111827 100%);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;z-index:60;box-shadow:0 6px 18px rgba(2,6,23,0.4)}
+    .logo{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo .cap{font-size:1.6rem}
+    nav ul{display:flex;gap:18px;list-style:none;align-items:center}
+    nav a{color:#e6eef8;text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600}
+    nav a:hover{background:rgba(255,255,255,0.04);transform:translateY(-2px)}
+
+    /* ---------- Hero ---------- */
+    .container{max-width:1200px;margin:28px auto;padding:0 18px}
+    .hero{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,0.95),rgba(255,255,255,0.95));padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+
+    /* Slider */
+    .slider{position:relative;height:420px;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(2,6,23,0.07)}
+    .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .9s ease,transform .6s ease;display:flex;align-items:flex-end;padding:22px}
+    .slide.active{opacity:1}
+    .slide .slide-card{background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.4));padding:16px;border-radius:10px;color:#fff;backdrop-filter:blur(3px)}
+
+    /* Hero content */
+    .hero-content h2{font-size:2.2rem;color:#0b1220;margin-bottom:12px}
+    .hero-content p{color:#374151;margin-bottom:20px}
+    .controls{display:flex;gap:12px;align-items:center}
+
+    /* Dropdowns styled as buttons */
+    .btn{padding:12px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:10px}
+    .btn-primary{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff}
+    .btn-secondary{background:#111827;color:#fff}
+
+    .dropdown{position:relative}
+    .dropdown-menu{position:absolute;top:calc(100% + 10px);right:0;background:#fff;border-radius:10px;min-width:200px;box-shadow:0 12px 30px rgba(2,6,23,0.12);display:none;overflow:hidden}
+    .dropdown-menu a{display:flex;align-items:center;gap:10px;padding:12px 14px;color:#0b1220;text-decoration:none;border-bottom:1px solid #eef2f7}
+    .dropdown-menu a:last-child{border-bottom:0}
+    .dropdown-menu a:hover{background:#f1f5f9}
+    .dropdown.open .dropdown-menu{display:block}
+
+    /* ---------- Sections ---------- */
+    section{margin-top:22px;background:#fff;padding:36px;border-radius:12px;box-shadow:0 8px 24px rgba(2,6,23,0.04)}
+    .section-title{text-align:center;margin-bottom:24px}
+    .section-title h2{font-size:1.8rem;color:#0b1220}
+    .section-title p{color:#475569}
+
+    /* About grid */
+    .about-grid{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:center}
+    .about-grid img{width:100%;height:280px;object-fit:cover;border-radius:10px}
+
+    /* Help */
+    .help-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .step{background:linear-gradient(180deg,#f8fafc,#fff);padding:18px;border-radius:10px;box-shadow:0 8px 20px rgba(2,6,23,0.03);text-align:center}
+    .step i{font-size:1.6rem;color:#6366f1;margin-bottom:8px}
+
+    /* Contact card */
+    .contact-card{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+    .contact-item{background:#f8fafc;padding:18px;border-radius:10px;min-width:200px;text-align:center}
+
+    /* Notifications */
+    .notification{display:flex;gap:16px;align-items:center;justify-content:center;padding:18px;border-radius:10px;background:linear-gradient(180deg,#f1f5f9,#fff)}
+
+    /* Stats */
+    .stats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .stat{background:#f8fafc;padding:18px;border-radius:10px;text-align:center;min-width:160px}
+    .stat h4{font-size:1.6rem;margin-top:8px}
+
+    /* Footer */
+    footer{margin-top:28px;padding:28px 18px;text-align:center;color:#cbd5e1;background:linear-gradient(180deg,#0f172a,#111827)}
+    .social a{color:#cbd5e1;margin:0 8px;font-size:1.2rem}
+
+    /* ---------- Modal ---------- */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:120}
+    .modal-backdrop.show{display:flex}
+    .modal{background:#fff;width:420px;border-radius:12px;padding:18px;box-shadow:0 20px 50px rgba(2,6,23,0.4)}
+    .modal h3{margin-bottom:8px}
+    .modal .tabs{display:flex;gap:8px;margin-bottom:12px}
+    .tab{flex:1;padding:8px;border-radius:8px;text-align:center;cursor:pointer}
+    .tab.active{background:#eef2ff;color:#1e293b;font-weight:700}
+    .form-row{margin-bottom:12px}
+    .form-row label{display:block;margin-bottom:6px;color:#374151;font-weight:600}
+    .form-row input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8}
+    .modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+
+    /* small screens */
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;}
+      .about-grid{grid-template-columns:1fr}
+      .slider{height:300px}
+      .modal{width:92%;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><span class="cap">🎓</span> Parakh</div>
+    <nav>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#help">Help</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+        <li><a href="#notifications">Notifications</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <div class="hero">
+      <!-- LEFT: slider (images) -->
+      <div class="slider" aria-hidden="false" id="slider">
+        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1522881193457-37ae97c905bf?auto=format&fit=crop&w=1200&q=80')">
+          <div class="slide-card">
+            <strong>Track student performance</strong>
+            <div style="font-size:0.9rem">Attendance • Scores • Attempts</div>
+          </div>
+        </div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80')">
+          <div class="slide-card">
+            <strong>Identify at‑risk students early</strong>
+            <div style="font-size:0.9rem">Actionable, transparent risk signals</div>
+          </div>
+        </div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80')">
+          <div class="slide-card">
+            <strong>Empower mentors</strong>
+            <div style="font-size:0.9rem">Notifications and simple rules — no heavy maintenance</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: description + auth -->
+      <div class="hero-content">
+        <h2>Early intervention for student success</h2>
+        <p>Parakh merges attendance, assessment and payment data into a simple dashboard that highlights students needing attention. Configure thresholds, see colour-coded risk, and notify mentors — all with minimal training.</p>
+
+        <div class="controls">
+          <!-- Login dropdown -->
+          <div class="dropdown" id="loginDropdown">
+            <button class="btn btn-primary" aria-haspopup="true"aria-expanded="false" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <div class="dropdown-menu" role="menu">
+              <a href="#" data-action="login" data-role="teacher"><i class="fas fa-user-tie"></i> Teacher</a>
+              <a href="#" data-action="login" data-role="student"><i class="fas fa-user-graduate"></i> Student</a>
+              <a href="#" data-action="login" data-role="parent"><i class="fas fa-users"></i> Parent</a>
+            </div>
+          </div>
+
+          <!-- Register dropdown -->
+          <div class="dropdown" id="registerDropdown">
+            <button class="btn btn-secondary" aria-haspopup="true" aria-expanded="false" id="registerBtn"><i class="fas fa-user-plus"></i> Register</button>
+            <div class="dropdown-menu" role="menu">
+              <a href="#" data-action="register" data-role="teacher"><i class="fas fa-user-tie"></i> Teacher</a>
+              <a href="#" data-action="register" data-role="student"><i class="fas fa-user-graduate"></i> Student</a>
+              <a href="#" data-action="register" data-role="parent"><i class="fas fa-users"></i> Parent</a>
+            </div>
+          </div>
+        </div>
+
+        <p style="margin-top:12px;color:#475569;font-size:0.95rem">Click a role from Login/Register to open the role-specific form (modal).</p>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about" aria-labelledby="aboutTitle">
+      <div class="section-title">
+        <h2 id="aboutTitle">About Parakh</h2>
+        <p>A lightweight, transparent student‑risk monitoring tool built for public institutes.</p>
+      </div>
+
+      <div class="about-grid">
+        <div>
+          <h3>Our mission</h3>
+          <p>By the time term-end marks reveal failures, many students have disengaged beyond recovery. Parakh helps spot warning signs — low attendance, repeated failed attempts, falling scores — weeks earlier so mentors can intervene.</p>
+          <p>We prioritise clarity over mystery: rule-based thresholds, colour-coded risk levels, and scheduled notifications so educators retain control.</p>
+          <ul style="margin-top:12px;color:#374151">
+            <li>Merge existing spreadsheets (attendance, tests, fees)</li>
+            <li>Apply transparent rules to flag students</li>
+            <li>Notify mentors and guardians on a regular schedule</li>
+          </ul>
+        </div>
+        <img src="https://images.unsplash.com/photo-1584697964358-3e14ca57658b?auto=format&fit=crop&w=900&q=80" alt="Education analytics">
+      </div>
+    </section>
+
+    <!-- HELP -->
+    <section id="help" aria-labelledby="helpTitle">
+      <div class="section-title">
+        <h2 id="helpTitle">Help & Support</h2>
+        <p>How to login / register and get started</p>
+      </div>
+
+      <div class="help-steps">
+        <div class="step">
+          <i class="fas fa-sign-in-alt"></i>
+          <h4>Login</h4>
+          <p>Choose <strong>Login &gt; your role</strong>. A modal will open — enter your credentials to access a role-specific dashboard.</p>
+        </div>
+        <div class="step">
+          <i class="fas fa-user-plus"></i>
+          <h4>Register</h4>
+          <p>Choose <strong>Register &gt; your role</strong>. Provide basic details to create an account. Teachers and institutions can request admin approvals if needed.</p>
+        </div>
+        <div class="step">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h4>Monitor</h4>
+          <p>After login, use the dashboard to view fused data, colour-coded risk lists, and scheduled notifications for mentors and parents.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;justify-content:center">
+        <div class="contact-card">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <p style="margin-top:8px;font-weight:700">Email</p>
+            <p>parakh@gmail.com</p>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone"></i>
+            <p style="margin-top:8px;font-weight:700">Phone</p>
+            <p>1800 500 400</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <section id="notifications" aria-labelledby="notifTitle">
+      <div class="section-title">
+        <h2 id="notifTitle">Notifications</h2>
+        <p>Platform announcements</p>
+      </div>
+      <div class="notification">
+        <i class="fas fa-bell" style="font-size:28px;color:#6366f1"></i>
+        <div>
+          <strong>Coming soon</strong>
+          <div style="color:#475569">We will show real-time alerts and scheduled reports for mentors and guardians.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS / STATS -->
+    <section id="users" aria-labelledby="usersTitle">
+      <div class="section-title">
+        <h2 id="usersTitle">User Statistics</h2>
+        <p>Join our growing community of educators and institutions</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><i class="fas fa-users"></i><h4>2,500+</h4><div>Users</div></div>
+        <div class="stat"><i class="fas fa-school"></i><h4>120+</h4><div>Institutions</div></div>
+        <div class="stat"><i class="fas fa-graduation-cap"></i><h4>15,000+</h4><div>Students Monitored</div></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" aria-labelledby="contactTitle">
+      <div class="section-title">
+        <h2 id="contactTitle">Contact Us</h2>
+        <p>Questions, partnerships or support</p>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div style="max-width:720px;text-align:center">
+          <p style="color:#475569;margin-bottom:12px">Email: <a href="mailto:parakh@gmail.com">parakh@gmail.com</a> &nbsp; | &nbsp; Phone: 1800 500 400</p>
+          <p style="color:#475569">For institutional onboarding, please contact our partnerships team at the above email.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div style="max-width:1100px;margin:auto">
+      <div style="font-weight:700;font-size:1.1rem">Parakh 🎓 — Early intervention for student success</div>
+      <div class="social" style="margin-top:12px">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <div style="color:#94a3b8;margin-top:10px;font-size:0.95rem">&copy; 2025 Parakh. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- Modal (login/register) -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Authenticate</h3>
+      <div style="display:flex;gap:8px;margin-bottom:12px" class="tabs" id="modalTabs">
+        <div class="tab active" data-mode="login">Login</div>
+        <div class="tab" data-mode="register">Register</div>
+      </div>
+
+      <div id="modalBody">
+        <!-- form will be injected here -->
+      </div>
+
+      <div class="actions" style="margin-top:10px;display:flex;justify-content:flex-end">
+        <button class="btn" id="modalCancel">Cancel</button>
+        <button class="btn btn-primary" id="modalSubmit">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Slider ----------
+    (function(){
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      let idx = 0;
+      const next = () => {
+        slides[idx].classList.remove('active');
+        idx = (idx + 1) % slides.length;
+        slides[idx].classList.add('active');
+      };
+      setInterval(next,3000);
+    })();
+
+    // ---------- Dropdowns ----------
+    function setupDropdown(id){
+      const root = document.getElementById(id);
+      const btn = root.querySelector('button');
+      const menu = root.querySelector('.dropdown-menu');
+
+      // toggle on click
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        root.classList.toggle('open');
+        btn.setAttribute('aria-expanded', root.classList.contains('open'));
+      });
+
+      // clicking menu items
+      menu.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', (ev)=>{
+          ev.preventDefault();
+          const action = a.dataset.action; // login or register
+          const role = a.dataset.role; // teacher|student|parent
+          openAuthModal(action,role);
+          closeAllDropdowns();
+        });
+      });
+    }
+
+    setupDropdown('loginDropdown');
+    setupDropdown('registerDropdown');
+
+    // close dropdowns when clicking outside
+    function closeAllDropdowns(){
+      document.querySelectorAll('.dropdown').forEach(d=>{
+        d.classList.remove('open');
+        const b = d.querySelector('button'); if(b) b.setAttribute('aria-expanded','false');
+      });
+    }
+    document.addEventListener('click', closeAllDropdowns);
+
+    // ---------- Modal logic ----------
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalBody = document.getElementById('modalBody');
+    const modalTitle = document.getElementById('modalTitle');
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    let currentMode = 'login';
+    let currentRole = 'teacher';
+
+    function buildForm(mode,role){
+      // simple role-aware form
+      const isRegister = mode === 'register';
+      const html = [];
+      html.push(`<div class=\"form-row\"><label>Email</label><input type=\"email\" id=\"authEmail\" placeholder=\"name@example.com\"></div>`);
+      if(isRegister){ html.push(`<div class=\"form-row\"><label>Full name</label><input type=\"text\" id=\"authName\" placeholder=\"Your full name\"></div>`); }
+      html.push(`<div class=\"form-row\"><label>Password</label><input type=\"password\" id=\"authPassword\" placeholder=\"At least 6 characters\"></div>`);
+
+      // role-specific hint
+      let hint = '';
+      if(role === 'teacher') hint = 'Use your institutional email to register as a teacher.';
+      if(role === 'student') hint = 'Students can register with personal or college email.';
+      if(role === 'parent') hint = 'Parents will be linked to a student account after registration.';
+
+      html.push(`<div style=\"margin-top:6px;color:#475569;font-size:0.95rem\">${hint}</div>`);
+      modalBody.innerHTML = html.join('');
+      modalTitle.textContent = `${capitalize(mode)} — ${capitalize(role)}`;
+    }
+
+    function openAuthModal(mode,role){
+      currentMode = mode; currentRole = role;
+      // set active tab
+      tabs.forEach(t=> t.classList.toggle('active', t.dataset.mode === mode));
+      buildForm(mode,role);
+      modalBackdrop.classList.add('show');
+      modalBackdrop.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // modal tab click
+    tabs.forEach(t=> t.addEventListener('click', ()=>{
+      const mode = t.dataset.mode;
+      currentMode = mode;
+      tabs.forEach(x=> x.classList.toggle('active', x.dataset.mode === mode));
+      buildForm(currentMode,currentRole);
+    }));
+
+    // cancel / submit
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSubmit').addEventListener('click', ()=>{
+      // very simple validation & fake submit
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      if(!email || !password){ alert('Please provide email and password.'); return; }
+      if(currentMode === 'register'){
+        const name = document.getElementById('authName') ? document.getElementById('authName').value.trim() : '';
+        if(!name){ alert('Please enter full name.'); return; }
+      }
+      // For hackathon demo we just show a toast
+      alert(`${capitalize(currentMode)} successful for ${capitalize(currentRole)} (demo).`);
+      closeModal();
+    });
+
+    function closeModal(){
+      modalBackdrop.classList.remove('show');
+      modalBackdrop.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+
+    // click outside modal to close
+    modalBackdrop.addEventListener('click', (e)=>{
+      if(e.target === modalBackdrop) closeModal();
+    });
+
+    // keyboard escape
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    // ---------- Smooth scrolling for nav anchors ----------
+    document.querySelectorAll('nav a').forEach(a=>{
+      a.addEventListener('click', function(evt){
+        evt.preventDefault(); const id = this.getAttribute('href'); const el = document.querySelector(id);
+        if(!el) return; window.scrollTo({top: el.offsetTop - 18, behavior: 'smooth'});
+      });
+    });
+  </script>
+</body>
+</html>
